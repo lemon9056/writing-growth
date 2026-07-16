@@ -16,8 +16,15 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://writing-growth.vercel.app"),
   title: "마음의 초고",
   description: "완벽하지 않아도 괜찮은, 매일 짧게 써보는 나만의 초고",
+  openGraph: {
+    title: "마음의 초고",
+    description: "완벽하지 않아도 괜찮은, 매일 짧게 써보는 나만의 초고",
+    type: "website",
+    images: ["/og-image.svg"],
+  },
 };
 
 export default function RootLayout({
