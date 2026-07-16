@@ -12,6 +12,40 @@ type Entry = {
   created_at: string;
 };
 
+// 손으로 그린 듯한 반짝임(별) 낙서
+function SparkleDoodle({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M12 2c.6 3.8 1.8 6.2 5 7.5-3.2 1.3-4.4 3.7-5 7.5-.6-3.8-1.8-6.2-5-7.5 3.2-1.3 4.4-3.7 5-7.5z" />
+    </svg>
+  );
+}
+
+// 손으로 그린 듯한 물결선 낙서
+function SquiggleDoodle({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 60 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M2 9c4-8 8 8 12 0s8 8 12 0 8 8 12 0 8 8 12 0 8 8 12 0" />
+    </svg>
+  );
+}
+
+const cardStyle =
+  "rounded-[2rem] bg-white shadow-[0_25px_60px_-15px_rgba(74,55,40,0.35)]";
+
 export default function Home() {
   const [entry, setEntry] = useState("");
   // 저장 결과를 사용자에게 보여주기 위한 상태
@@ -50,57 +84,63 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-10 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          오늘의 글쓰기 주제
+    <div className="flex flex-col flex-1 items-center bg-gradient-to-br from-[#FBF3E7] to-[#F6D9C4] px-6 py-16 font-sans text-[#4A3728]">
+      <div className="relative">
+        <SparkleDoodle className="absolute -left-8 -top-4 h-6 w-6 -rotate-12 text-[#E8735A]" />
+        <h1 className="font-serif text-4xl font-bold text-[#4A3728]">
+          마음의 초고
         </h1>
-        <p className="mt-4 text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-          {TOPIC}
-        </p>
+        <SquiggleDoodle className="absolute -bottom-4 left-1/2 h-4 w-16 -translate-x-1/2 text-[#E8735A]" />
       </div>
+
+      <div className={`mt-14 w-full max-w-md p-10 ${cardStyle}`}>
+        <h2 className="font-serif text-xl font-bold text-[#4A3728]">
+          오늘의 글쓰기 주제
+        </h2>
+        <p className="mt-4 text-lg leading-8 text-[#4A3728]/80">{TOPIC}</p>
+      </div>
+
       <div className="mt-6 w-full max-w-md">
         <textarea
           value={entry}
           onChange={(e) => setEntry(e.target.value)}
           rows={8}
           placeholder="이곳에 글을 써보세요..."
-          className="w-full resize-none rounded-2xl border border-zinc-200 bg-white p-6 text-base leading-7 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400 focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
+          className="w-full resize-none rounded-[2rem] border border-[#F6D9C4] bg-white p-6 text-base leading-7 text-[#4A3728] shadow-[0_20px_45px_-15px_rgba(74,55,40,0.25)] outline-none placeholder:text-[#4A3728]/40 focus:border-[#E8735A]"
         />
         <button
           onClick={handleSave}
-          className="mt-4 w-full rounded-full bg-zinc-900 px-5 py-3 text-base font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="mt-4 w-full rounded-[2rem] bg-[#E8735A] px-5 py-3 text-base font-medium text-white shadow-[0_15px_30px_-10px_rgba(232,115,90,0.6)] transition-colors hover:bg-[#df6249]"
         >
           저장하기
         </button>
         {message && (
-          <p className="mt-3 text-center text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-3 text-center text-sm text-[#4A3728]/70">
             {message}
           </p>
         )}
       </div>
-      <div className="mt-10 w-full max-w-md">
-        <h2 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+
+      <div className="relative mt-14 w-full max-w-md">
+        <SparkleDoodle className="absolute -right-3 -top-6 h-5 w-5 rotate-6 text-[#E8735A]/70" />
+        <h2 className="font-serif text-lg font-bold text-[#4A3728]">
           지난 글 목록
         </h2>
         {entries.length === 0 ? (
-          <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-4 text-sm text-[#4A3728]/60">
             아직 작성한 글이 없어요
           </p>
         ) : (
-          <ul className="mt-4 flex flex-col gap-3">
+          <ul className="mt-4 flex flex-col gap-4">
             {entries.map((item) => (
-              <li
-                key={item.id}
-                className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              <li key={item.id} className={`p-5 ${cardStyle}`}>
+                <p className="text-xs text-[#4A3728]/50">
                   {new Date(item.created_at).toLocaleDateString("ko-KR")}
                 </p>
-                <p className="mt-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <p className="mt-1 text-sm font-medium text-[#4A3728]/80">
                   {item.topic}
                 </p>
-                <p className="mt-2 whitespace-pre-wrap text-base leading-7 text-zinc-900 dark:text-zinc-50">
+                <p className="mt-2 whitespace-pre-wrap text-base leading-7 text-[#4A3728]">
                   {item.content}
                 </p>
               </li>
