@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: "마음의 초고",
     description: "완벽하지 않아도 괜찮은, 매일 짧게 써보는 나만의 초고",
     type: "website",
-    images: ["/og-image.svg"],
+    images: ["/og-image.png"],
   },
 };
 
