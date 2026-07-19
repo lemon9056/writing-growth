@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { getTodayTopic, getRandomTopic, CATEGORIES, type Topic } from "@/lib/topics";
+import { calculateStreak } from "@/lib/streak";
 import LoginScreen from "@/app/components/LoginScreen";
 import CategoryDropdown from "@/app/components/CategoryDropdown";
 
@@ -96,6 +97,9 @@ export default function Home() {
     }
   }, [session]);
 
+  // 지금까지 불러온 글 목록으로 연속 작성 일수를 계산
+  const streak = calculateStreak(entries.map((item) => item.created_at));
+
   const handleShowRandomTopic = () => {
     setTopic(getRandomTopic(categoryFilter));
   };
@@ -148,6 +152,12 @@ export default function Home() {
         </h1>
         <SquiggleDoodle className="absolute -bottom-4 left-1/2 h-4 w-16 -translate-x-1/2 text-[#E8735A]" />
       </div>
+
+      {session && streak > 0 && (
+        <div className="mt-4 rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#4A3728] shadow-[0_8px_20px_-8px_rgba(74,55,40,0.25)]">
+          🔥 {streak}일 연속
+        </div>
+      )}
 
       {!session ? (
         <LoginScreen />
