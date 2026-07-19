@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
-import { getTodayTopic } from "@/lib/topics";
+import { getTodayTopic, getRandomTopic, CATEGORIES, type Topic } from "@/lib/topics";
 import LoginScreen from "@/app/components/LoginScreen";
 
 type Entry = {
   id: number;
   topic: string;
+  category: string;
   content: string;
   created_at: string;
 };
@@ -48,8 +49,10 @@ const cardStyle =
   "rounded-[2rem] bg-white shadow-[0_25px_60px_-15px_rgba(74,55,40,0.35)]";
 
 export default function Home() {
-  // 오늘 날짜에 맞는 주제 (자정이 지나면 자동으로 다음 주제로 바뀜)
-  const TOPIC = getTodayTopic();
+  // 화면에 표시 중인 주제. 처음엔 오늘의 고정 주제로 시작하고,
+  // '다른 주제 보기'를 누르면 이 state만 바뀜 (오늘의 주제 자체는 그대로 유지됨)
+  const [topic, setTopic] = useState<Topic>(() => getTodayTopic());
+  const [categoryFilter, setCategoryFilter] = useState("전체");
   const [session, setSession] = useState<Session | null>(null);
   // 로그인 여부를 아직 확인 중인 동안에는 로그인 화면을 잠깐이라도 보여주지 않기 위한 상태
   const [checkingSession, setCheckingSession] = useState(true);
@@ -76,7 +79,7 @@ export default function Home() {
   const fetchEntries = async (userId: string) => {
     const { data, error } = await supabase
       .from("entries")
-      .select("id, topic, content, created_at")
+      .select("id, topic, category, content, created_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -92,12 +95,19 @@ export default function Home() {
     }
   }, [session]);
 
+  const handleShowRandomTopic = () => {
+    setTopic(getRandomTopic(categoryFilter));
+  };
+
   const handleSave = async () => {
     if (!session) return;
 
-    const { error } = await supabase
-      .from("entries")
-      .insert({ topic: TOPIC, content: entry, user_id: session.user.id });
+    const { error } = await supabase.from("entries").insert({
+      topic: topic.text,
+      category: topic.category,
+      content: entry,
+      user_id: session.user.id,
+    });
 
     if (error) {
       setMessage("저장에 실패했습니다. 다시 시도해주세요.");
@@ -146,7 +156,29 @@ export default function Home() {
             <h2 className="font-serif text-xl font-bold text-[#4A3728]">
               오늘의 글쓰기 주제
             </h2>
-            <p className="mt-4 text-lg leading-8 text-[#4A3728]/80">{TOPIC}</p>
+            <p className="mt-4 text-lg leading-8 text-[#4A3728]/80">
+              {topic.text}
+            </p>
+            <div className="mt-6 flex items-center gap-2">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="rounded-full border border-[#F6D9C4] bg-white px-3 py-1.5 text-xs text-[#4A3728] outline-none focus:border-[#E8735A]"
+              >
+                <option value="전체">전체</option>
+                {CATEGORIES.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={handleShowRandomTopic}
+                className="rounded-full border border-[#E8735A] px-3 py-1.5 text-xs font-medium text-[#E8735A] transition-colors hover:bg-[#E8735A] hover:text-white"
+              >
+                다른 주제 보기
+              </button>
+            </div>
           </div>
 
           <div className="mt-6 w-full max-w-md">
@@ -183,9 +215,14 @@ export default function Home() {
               <ul className="mt-4 flex flex-col gap-4">
                 {entries.map((item) => (
                   <li key={item.id} className={`p-5 ${cardStyle}`}>
-                    <p className="text-xs text-[#4A3728]/50">
-                      {new Date(item.created_at).toLocaleDateString("ko-KR")}
-                    </p>
+                    <div className="flex items-center gap-2 text-xs text-[#4A3728]/50">
+                      <span>
+                        {new Date(item.created_at).toLocaleDateString("ko-KR")}
+                      </span>
+                      <span className="rounded-full bg-[#F6D9C4]/60 px-2 py-0.5 text-[#4A3728]/70">
+                        {item.category}
+                      </span>
+                    </div>
                     <p className="mt-1 text-sm font-medium text-[#4A3728]/80">
                       {item.topic}
                     </p>
