@@ -5,6 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { getTodayTopic, getRandomTopic, CATEGORIES, type Topic } from "@/lib/topics";
 import LoginScreen from "@/app/components/LoginScreen";
+import CategoryDropdown from "@/app/components/CategoryDropdown";
 
 type Entry = {
   id: number;
@@ -160,18 +161,11 @@ export default function Home() {
               {topic.text}
             </p>
             <div className="mt-6 flex items-center gap-2">
-              <select
+              <CategoryDropdown
                 value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="rounded-full border border-[#F6D9C4] bg-white px-3 py-1.5 text-xs text-[#4A3728] outline-none focus:border-[#E8735A]"
-              >
-                <option value="전체">전체</option>
-                {CATEGORIES.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+                options={["전체", ...CATEGORIES]}
+                onChange={setCategoryFilter}
+              />
               <button
                 onClick={handleShowRandomTopic}
                 className="rounded-full border border-[#E8735A] px-3 py-1.5 text-xs font-medium text-[#E8735A] transition-colors hover:bg-[#E8735A] hover:text-white"
