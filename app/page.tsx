@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { getTodayTopic } from "@/lib/topics";
 import LoginScreen from "@/app/components/LoginScreen";
-
-const TOPIC = "어린 시절 가장 기억에 남는 순간을 떠올려 써보세요";
 
 type Entry = {
   id: number;
@@ -49,6 +48,8 @@ const cardStyle =
   "rounded-[2rem] bg-white shadow-[0_25px_60px_-15px_rgba(74,55,40,0.35)]";
 
 export default function Home() {
+  // 오늘 날짜에 맞는 주제 (자정이 지나면 자동으로 다음 주제로 바뀜)
+  const TOPIC = getTodayTopic();
   const [session, setSession] = useState<Session | null>(null);
   // 로그인 여부를 아직 확인 중인 동안에는 로그인 화면을 잠깐이라도 보여주지 않기 위한 상태
   const [checkingSession, setCheckingSession] = useState(true);
